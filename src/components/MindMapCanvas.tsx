@@ -93,7 +93,7 @@ const MindMapCanvas: React.FC = () => {
   return (
     <div
       ref={canvasRef}
-      className="relative h-full w-full overflow-hidden bg-gradient-to-br from-neutral via-background to-neutral grid-pattern cursor-grab active:cursor-grabbing"
+      className="mind-map-canvas relative h-full w-full overflow-hidden bg-gradient-to-br from-neutral via-background to-neutral grid-pattern cursor-grab active:cursor-grabbing"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -114,14 +114,23 @@ const MindMapCanvas: React.FC = () => {
           ))
         )}
 
-        {nodes.map((node) => (
-          <IdeaBlock
-            key={node.id}
-            node={node}
-            connectingFrom={connectingFrom}
-            setConnectingFrom={setConnectingFrom}
-          />
-        ))}
+        {nodes.map((node) => {
+          if (node.type === 'arrow') {
+            return <ArrowElement key={node.id} node={node} />;
+          } else if (node.type === 'shape') {
+            return <ShapeElement key={node.id} node={node} />;
+          } else if (node.type === 'line') {
+            return <LineElement key={node.id} node={node} />;
+          }
+          return (
+            <IdeaBlock
+              key={node.id}
+              node={node}
+              connectingFrom={connectingFrom}
+              setConnectingFrom={setConnectingFrom}
+            />
+          );
+        })}
       </div>
 
       {nodes.length === 0 && (

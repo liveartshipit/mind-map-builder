@@ -28,9 +28,16 @@ const ArrowElement: React.FC<ArrowElementProps> = ({ node }) => {
       const canvas = elementRef.current.parentElement;
       if (canvas) {
         const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left - dragOffset.x;
-        const y = e.clientY - rect.top - dragOffset.y;
-        updateNode(node.id, { x, y });
+        const zoom = parseFloat(canvas.style.transform.match(/scale\(([\d.]+)\)/)?.[1] || '1');
+        const pan = {
+          x: parseFloat(canvas.style.transform.match(/translate\(([-\d.]+)px/)?.[1] || '0'),
+          y: parseFloat(canvas.style.transform.match(/translate\([-\d.]+px,\s*([-\d.]+)px/)?.[1] || '0'),
+        };
+        
+        const newX = (e.clientX - rect.left - pan.x - dragOffset.x) / zoom;
+        const newY = (e.clientY - rect.top - pan.y - dragOffset.y) / zoom;
+        
+        updateNode(node.id, { x: newX, y: newY });
       }
     }
   };
@@ -41,11 +48,11 @@ const ArrowElement: React.FC<ArrowElementProps> = ({ node }) => {
 
   React.useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
       return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
       };
     }
   }, [isDragging, dragOffset]);

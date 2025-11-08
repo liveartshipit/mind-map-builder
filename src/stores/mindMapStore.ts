@@ -19,7 +19,7 @@ export interface IdeaListItem {
 }
 
 interface MindMapState {
-  nodes: IdeaNode[];
+  nodes: MindMapNode[];
   ideaList: IdeaListItem[];
   selectedNodeId: string | null;
   isIdeaListOpen: boolean;
